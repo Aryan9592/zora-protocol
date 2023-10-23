@@ -6,6 +6,8 @@
 
 - 9495c34: Supply royalties are no longer supported
 
+For existing contracts that are upgraded, supply royalties are ignored, while new contracts cannot set or update a supply royalty.
+
 ## 2.0.4
 
 ### Patch Changes
