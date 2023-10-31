@@ -2,8 +2,16 @@
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
+import {ForkDeploymentConfig} from "../src/DeploymentConfig.sol";
+import {ZoraCreator1155Attribution, ContractCreationConfig, PremintConfig, TokenCreationConfig} from "@zoralabs/zora-1155-contracts/src/delegation/ZoraCreator1155Attribution.sol";
+import {ZoraCreator1155PremintExecutorImpl} from "@zoralabs/zora-1155-contracts/src/delegation/ZoraCreator1155PremintExecutorImpl.sol";
+import {ZoraCreator1155FactoryImpl} from "@zoralabs/zora-1155-contracts/src/factory/ZoraCreator1155FactoryImpl.sol";
 
 contract ZoraCreator1155PreminterForkTest is ForkDeploymentConfig, Test {
+    ZoraCreator1155FactoryImpl factory;
+    ZoraCreator1155PremintExecutorImpl preminter;
+    uint256 mintFeeAmount = 0.000777 ether;
+
     /// @notice gets the chains to do fork tests on, by reading environment var FORK_TEST_CHAINS.
     /// Chains are by name, and must match whats under `rpc_endpoints` in the foundry.toml
     function getForkTestChains() private view returns (string[] memory result) {
