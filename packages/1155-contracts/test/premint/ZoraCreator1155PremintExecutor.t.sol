@@ -776,6 +776,34 @@ contract ZoraCreator1155PreminterTest is ForkDeploymentConfig, Test {
         assertEq(storedCreateReferral, createReferral);
     }
 
+    function test_premintWithNoMintRecipient_mintsTokenToMsgSender() public {
+        ContractCreationConfig memory contractConfig = makeDefaultContractCreationConfig();
+        PremintConfigV2 memory premintConfig = makeDefaultPremintConfig();
+
+        address contractAddress = preminter.getContractAddress(contractConfig);
+
+        // sign and execute premint
+        bytes memory signature = _signPremint(contractAddress, premintConfig, creatorPrivateKey, block.chainid);
+
+        IZoraCreator1155PremintExecutor.MintArguments memory mintArguments = IZoraCreator1155PremintExecutor.MintArguments({
+            mintRecipient: address(0),
+            mintComment: "",
+            mintReferral: address(0)
+        });
+
+        uint256 quantityToMint = 3;
+        uint256 mintCost = mintFeeAmount * quantityToMint;
+        address executor = makeAddr("executor");
+        vm.deal(executor, mintCost);
+
+        // now call the premint function, using the same config that was used to generate the digest, and the signature
+        vm.prank(executor);
+        uint256 newTokenId = preminter.premintV2{value: mintCost}(contractConfig, premintConfig, signature, quantityToMint, mintArguments).tokenId;
+
+        // assert executor gets minted the tokens
+        assertEq(IZoraCreator1155(contractAddress).balanceOf(executor, newTokenId), quantityToMint);
+    }
+
     function _signAndExecutePremint(
         ContractCreationConfig memory contractConfig,
         PremintConfigV2 memory premintConfig,
