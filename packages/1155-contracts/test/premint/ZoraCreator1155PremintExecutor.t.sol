@@ -19,6 +19,7 @@ import {ZoraCreator1155Attribution, ContractCreationConfig, TokenCreationConfig,
 import {ForkDeploymentConfig, Deployment} from "../../src/deployment/DeploymentConfig.sol";
 import {UUPSUpgradeable} from "@zoralabs/openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {ProxyShim} from "../../src/utils/ProxyShim.sol";
+import {IMinterErrors} from "../../src/interfaces/IMinterErrors.sol";
 
 contract ZoraCreator1155PreminterTest is ForkDeploymentConfig, Test {
     uint256 internal constant CONTRACT_BASE_ID = 0;
@@ -604,7 +605,7 @@ contract ZoraCreator1155PreminterTest is ForkDeploymentConfig, Test {
         // execute mint directly on the contract - and check make sure it reverts if minted after sale start
         IMinter1155 fixedPriceMinter = factory.defaultMinters()[0];
         if (shouldRevert) {
-            vm.expectRevert(ZoraCreatorFixedPriceSaleStrategy.SaleEnded.selector);
+            vm.expectRevert(IMinterErrors.SaleEnded.selector);
         }
 
         vm.deal(premintExecutor, mintCost);
